@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -40,6 +41,7 @@ public class ExampleService {
     return "RedisProcessed: " + input;
   }
 
+  // sets key differently
   @Cacheable(value = "exampleRedisCacheList", cacheManager = "redisCacheManager")
   public List<String> processRedisList() {
     List<String> data = new ArrayList<>();
@@ -54,11 +56,11 @@ public class ExampleService {
     return data;
   }
 
-  public String processRedisListData() {
-    return redisCacheService.getFromCache("exampleRedisCacheList");
+  public List<String> processRedisListData() {
+    return redisCacheService.getListFromRedis("exampleRedisCacheList");
   }
 
-  public void processRecreateRedisList() {
+  public void processRecreateRedisList() throws JsonProcessingException {
     List<String> data = new ArrayList<>();
     data.add("hello");
     data.add("good-morning");

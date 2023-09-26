@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.service.ExampleService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,12 +33,12 @@ public class ExampleController {
   }
 
   @GetMapping("/process/redis-list-template")
-  public String processRedisListTemplate() {
+  public List<String> processRedisListTemplate() {
     return exampleService.processRedisListData();
   }
 
   @GetMapping("/process/redis-list-recreate")
-  public String processRecreateRedisList() {
+  public String processRecreateRedisList() throws JsonProcessingException {
     exampleService.processRecreateRedisList();
     return "ok";
   }
