@@ -1,5 +1,6 @@
 package com.example.demo.config.caching;
 
+import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,13 @@ public class CachingConfig {
         .cacheDefaults(cacheConfiguration)
         .build();
   }
+
+//  @Bean
+//  public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
+//    return (builder) -> builder
+//        .withCacheConfiguration("usersList",
+//            RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(1)));
+//  }
 
   @Primary
   @Bean
