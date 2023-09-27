@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +21,15 @@ public class ExampleService {
   private Map<String, String> db;
 
   private RedisCacheService redisCacheService;
+
+  private RedisCacheManager redisCacheManager;
   @Autowired
-  public ExampleService(RedisCacheService redisCacheService) {
+  public ExampleService(RedisCacheService redisCacheService,
+                        RedisCacheManager redisCacheManager) {
 
     this.redisCacheService = redisCacheService;
     this.db = new HashMap<>();
+    this.redisCacheManager = redisCacheManager;
   }
 
   @Cacheable(value = "customerOrders", key = "#input", cacheManager = "alternateCacheManager")
@@ -125,5 +130,12 @@ public class ExampleService {
       @CacheEvict(value = "user", key = "#name", cacheManager = "redisCacheManager"), })
   public void deleteString(String name) {
     this.db.remove(name);
+  }
+
+  // evict caches programmatically
+  // https://www.baeldung.com/spring-boot-evict-cache
+  public void evictAllCaches() {
+    redisCacheManager.getCacheNames().stream()
+        .forEach(cacheName -> redisCacheManager.getCache(cacheName).clear());
   }
 }
