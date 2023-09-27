@@ -3,20 +3,28 @@ package com.example.demo.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ExampleService {
 
+  private Map<String, String> db;
+
   private RedisCacheService redisCacheService;
   @Autowired
   public ExampleService(RedisCacheService redisCacheService) {
+
     this.redisCacheService = redisCacheService;
+    this.db = new HashMap<>();
   }
 
   @Cacheable(value = "customerOrders", key = "#input", cacheManager = "alternateCacheManager")
@@ -82,5 +90,40 @@ public class ExampleService {
 
   public void emptyExampleRedisCache() {
     redisCacheService.evictCache("exampleRedisCache::hello-redis");
+  }
+
+//////////////////////////////
+  // https://www.mindbowser.com/spring-boot-with-redis-cache-using-annotation/
+  @Cacheable(value = "user", key = "#name", cacheManager = "redisCacheManager")
+  public String stringById(String name) {
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    return this.db.get(name);
+  }
+
+  @Caching(evict = { @CacheEvict(value = "usersList", allEntries = true, cacheManager = "redisCacheManager"), }, put = {
+      @CachePut(value = "user", key = "#name", cacheManager = "redisCacheManager") })
+  public String saveString(String name) {
+    this.db.put(name, name);
+    return name;
+  }
+
+  @Cacheable(value = "usersList", cacheManager = "redisCacheManager")
+  public Map<String, String> getAllString() {
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    return this.db;
+  }
+
+  @Caching(evict = { @CacheEvict(value = "usersList", allEntries = true, cacheManager = "redisCacheManager"),
+      @CacheEvict(value = "user", key = "#name", cacheManager = "redisCacheManager"), })
+  public void deleteString(String name) {
+    this.db.remove(name);
   }
 }

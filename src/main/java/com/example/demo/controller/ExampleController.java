@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/product")
@@ -54,4 +55,28 @@ public class ExampleController {
      exampleService.emptyExampleCache();
     return "ok";
   }
+
+  /////////////////
+
+  @GetMapping("/string/get/{input}")
+  public String stringGet(@PathVariable String input) {
+    return exampleService.stringById(input);
+  }
+
+  @GetMapping("/string/save/{input}")
+  public String stringSave(@PathVariable String input) {
+    return exampleService.saveString(input);
+  }
+
+  @GetMapping("/string/getlist")
+  public Map<String, String> stringGetList() {
+    return exampleService.getAllString();
+  }
+
+  @GetMapping("/string/delete/{input}")
+  public String stringDelete(@PathVariable String input) {
+     exampleService.deleteString(input);
+     return "ok";
+  }
+
 }
